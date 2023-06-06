@@ -1,23 +1,46 @@
-import logo from './logo.svg';
+import { useState } from 'react';
+import ParticlesBg from 'particles-bg'
 import './App.css';
+import Body from './components/Body';
 
 function App() {
+
+  const [endereco, setEndereco] = useState({});
+
+  const onType = (event) => {
+    const cep = event.target.value
+
+    setEndereco({
+      cep
+    })
+
+    if ( cep && cep.length === 8 ) {
+      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(resposta => resposta.json())
+        .then(dados => {
+          setEndereco({
+            ...endereco,
+            rua: dados.logradouro,
+            bairro: dados.bairro,
+            cidade: dados.localidade,
+            estado: dados.uf
+          })
+        })
+    }
+  }
+
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ParticlesBg
+        bg={true} 
+        type='cobweb'
+      />
+      <Body 
+        onType={onType}
+        endereco={endereco}
+      />
     </div>
   );
 }
